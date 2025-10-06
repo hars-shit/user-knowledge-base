@@ -22,9 +22,14 @@ const ArticlesSection = ({ posts = [], searchTerm, loading }) => {
         ) : (
           latestPosts.map((article, idx) => (
             <div key={idx} className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-200">
-              {article.featured_image && (
-                <img src={article.featured_image} alt={article.title} className="w-full h-40 object-cover" />
+              {article.featured_image ? (
+                <img src={article.featured_image} alt={article.title} className="w-full h-40 object-cover" />)
+              :
+             ( <video src={article?.featured_video} alt={article.title} className="w-full h-40 object-cover" />
+           
+              
               )}
+              
               <div className="p-4">
                 <div className="flex items-center mb-2">
                   <FaRegFileAlt className="text-blue-600 text-2xl mr-2" />
