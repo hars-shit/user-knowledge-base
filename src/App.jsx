@@ -12,8 +12,8 @@ const App = () => {
       <Header />
     <Routes>
       <Route path='/' element={<Home />}/>
-      <Route path="/category/:slug" element={<Category />}/>
-       <Route path="/category/:slug/:articleSlug" element={<ArticlePage />} />
+      <Route path="/category/:id/:name" element={<Category />}/>
+       <Route path="/category/:id/:name/:postId/:article" element={<ArticlePage />} />
     </Routes>
     </BrowserRouter>
     </div>

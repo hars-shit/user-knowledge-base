@@ -1,15 +1,57 @@
 import { Link } from 'react-router-dom';
 import ArticlesSection from '../components/Articles';
-import { Category } from '../dummyData/Category';
-import React from 'react';
+import { fetchCategories, fetchAllPosts, fetchPostsBySearch } from '../services/api.js';
+import React, { useEffect, useState } from 'react';
 import { IoSearchSharp } from "react-icons/io5";
 
 const Home = () => {
+    const [cat, setCat] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [allPosts, setAllPosts] = useState([]); // all posts initially
+    const [displayedPosts, setDisplayedPosts] = useState([]); // posts to show in ArticlesSection
+    const [loadingSearch, setLoadingSearch] = useState(false);
+
+    // Fetch categories
+    useEffect(() => {
+        fetchCategories()
+            .then(data => setCat(data))
+            .catch(err => console.error(err));
+    }, []);
+
+    // Fetch all posts on page load
+    useEffect(() => {
+        fetchAllPosts()
+            .then(data => {
+                setAllPosts(data?.results || []);
+                setDisplayedPosts(data?.results || []);
+            })
+            .catch(err => console.error(err));
+    }, []);
+
+    // Handle search button click
+    const handleSearch = async () => {
+        if (!searchTerm) {
+            // if input is empty, show all posts
+            setDisplayedPosts(allPosts);
+            return;
+        }
+
+        setLoadingSearch(true);
+        try {
+            const posts = await fetchPostsBySearch(searchTerm);
+            // make sure the API returns a `results` array or posts array
+            setDisplayedPosts(posts?.results || posts || []);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoadingSearch(false);
+        }
+    };
 
     return (
         <div className="min-h-screen ">
             {/* Hero Section */}
-            <section className="bg-[#1A2C40] text-white pt-24 pb-24 md:pb-36 px-6 flex flex-col items-center">
+            <section className="bg-[#1a3940] text-white pt-24 pb-24 md:pb-36 px-6 flex flex-col items-center">
                 <h1 className="text-2xl md:text-5xl font-bold mb-6 text-center">
                     Hi, how can we help you?
                 </h1>
@@ -19,43 +61,43 @@ const Home = () => {
                     <div className="flex">
                         <input
                             type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Search..."
                             className="flex-grow px-3 py-2 text-sm sm:px-4 sm:py-3 sm:text-base bg-white rounded-l-lg border focus:outline-none focus:ring-2 focus:ring-[#1A2C40] text-black"
+                            onKeyDown={(e) => e.key === 'Enter' && handleSearch()} // search on Enter
                         />
-                        <button className="bg-white text-[#1A2C40] px-4 sm:px-6 py-2 sm:py-3 rounded-r-lg font-semibold hover:bg-gray-100 transition flex items-center justify-center">
+                        <button
+                            onClick={handleSearch}
+                            className="cursor-pointer bg-white text-[#1A2C40] px-4 sm:px-6 py-2 sm:py-3 rounded-r-lg font-semibold hover:bg-gray-100 transition flex items-center justify-center"
+                        >
                             <IoSearchSharp className="text-lg sm:text-2xl" />
                         </button>
                     </div>
                 </div>
-
             </section>
 
             {/* Category Cards Section */}
             <section className="relative -mt-[6%] md:-mt-[3%] px-6">
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
-                    {/* Example Card */}
-                    {Category.map((e, index) => {
-                         const slug = e?.title?.toLowerCase().replace(/\s+/g, "-");
-                        return (
+                    {cat?.map((e, index) => (
                         <Link
-                         to={`/category/${slug}`}
+                            to={`/category/${e?.id}/${encodeURIComponent(e?.name)}`}
                             key={index}
-                            className="bg-white cursor-pointer shadow-md rounded-xl p-6 flex flex-col items-center text-center h-52" // h-64 makes it taller
+                            className="bg-white cursor-pointer rounded-xl p-16 flex flex-col items-center text-center shadow-lg hover:shadow-2xl transition-shadow duration-300"
                         >
-                            <img
-                                src={e.img}
-                                alt="Card Logo"
-                                className="w-16 h-16 object-contain mb-4"
-                            />
-                            <h3 className="text-lg font-semibold">{e?.title}</h3>
+                            <h3 className="text-lg font-semibold">{e?.name}</h3>
                         </Link>
-                    )})}
+                    ))}
                 </div>
             </section>
 
-            {/* Article section  */}
-
-            <ArticlesSection />
+            {/* Article section */}
+            <ArticlesSection
+                searchTerm={searchTerm}
+                posts={displayedPosts} 
+                loading={loadingSearch} 
+            />
         </div>
     );
 };
