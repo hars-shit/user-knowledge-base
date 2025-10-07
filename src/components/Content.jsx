@@ -2,10 +2,11 @@ import React from "react";
 import parse, { domToReact } from "html-react-parser";
 
 const Content = ({ post }) => {
-  if (!post || !post.body) return <p>Loading...</p>;
+  if (!post) return <p>Loading...</p>;
 
   const safeBody = typeof post.body === "string" ? post.body : "";
 
+  // Parse options for HTML content
   const options = {
     replace: (domNode) => {
       if (domNode.type === "tag") {
@@ -37,24 +38,87 @@ const Content = ({ post }) => {
           case "em":
             return <em className="italic">{children}</em>;
           case "a":
-            return <a className="text-blue-600 underline" href={domNode.attribs?.href}>{children}</a>;
+            return (
+              <a
+                className="text-blue-600 underline"
+                href={domNode.attribs?.href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {children}
+              </a>
+            );
           case "img":
-            return <img className="rounded-md my-2" src={domNode.attribs?.src} alt={domNode.attribs?.alt || ""} />;
+            return (
+              <img
+                className="rounded-md my-2"
+                src={domNode.attribs?.src}
+                alt={domNode.attribs?.alt || ""}
+              />
+            );
           case "blockquote":
-            return <blockquote className="border-l-4 border-gray-300 pl-4 italic mb-2">{children}</blockquote>;
+            return (
+              <blockquote className="border-l-4 border-gray-300 pl-4 italic mb-2">
+                {children}
+              </blockquote>
+            );
           case "br":
             return <br />;
           default:
-            return; // leave other tags as is
+            return;
         }
       }
     },
   };
 
+  const tags = Array.isArray(post.tags) ? post.tags : [];
+
   return (
     <div className="min-h-screen bg-gray-50 px-6 md:px-20 py-12 space-y-12">
+      {/* Featured Image or Video */}
+      <div className="flex justify-center">
+        {post.featured_image ? (
+          <img
+            src={post.featured_image}
+            alt={post.title || "Featured Image"}
+            className="w-full max-w-4xl rounded-lg shadow-md object-cover"
+          />
+        ) : post.featured_video ? (
+          <video
+            src={post.featured_video}
+            controls
+            className="w-full max-w-4xl rounded-lg shadow-md object-cover"
+          />
+        ) : (
+          <img
+            src="/assets/placeholder-image.png"
+            alt="Placeholder"
+            className="w-full max-w-4xl rounded-lg shadow-md object-cover"
+          />
+        )}
+      </div>
+
+      {/* Tags */}
+      {tags.length > 0 && (
+        <div className="flex flex-wrap gap-3 justify-center mt-4">
+          {tags.map((tag, index) => (
+            <span
+              key={index}
+              className={`px-3 py-1 text-sm rounded-full ${
+                index % 2 === 0
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-green-100 text-green-700"
+              }`}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Parsed Body */}
       <div className="prose max-w-full">
-        {parse(safeBody, options)}
+        {safeBody ? parse(safeBody, options) : <p>No content available.</p>}
       </div>
     </div>
   );

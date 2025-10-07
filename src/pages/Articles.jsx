@@ -44,7 +44,8 @@ const ArticlePage = () => {
       </section>
 
       {/* Main Grid */}
-      <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 px-6 py-12">
+   <div className="w-full flex flex-col md:flex-row gap-8 px-6 py-12 items-start">
+
         {/* Main Article */}
         <section className="md:col-span-2 bg-white shadow-md rounded-xl p-6 md:p-8">
           {loadingPost ? (
@@ -57,7 +58,7 @@ const ArticlePage = () => {
         </section>
 
         {/* Sidebar */}
-        <aside className="bg-white rounded-3xl p-6 shadow-xl w-full md:w-72 lg:w-80 flex-shrink-0">
+        <aside className="bg-white rounded-3xl p-6 shadow-xl w-full md:w-72 lg:w-85 flex-shrink-0">
           {/* Sidebar Title */}
           <h2 className="text-2xl font-bold mb-6 text-gray-700">All Categories</h2>
 
