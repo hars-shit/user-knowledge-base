@@ -78,19 +78,36 @@ const Home = () => {
             </section>
 
             {/* Category Cards Section */}
-            <section className="relative -mt-[6%] md:-mt-[3%] px-6">
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
-                    {cat?.map((e, index) => (
-                        <Link
-                            to={`/category/${e?.id}/${encodeURIComponent(e?.name)}`}
-                            key={index}
-                            className="bg-white cursor-pointer rounded-xl p-16 flex flex-col items-center text-center shadow-lg hover:shadow-2xl transition-shadow duration-300"
-                        >
-                            <h3 className="text-lg font-semibold">{e?.name}</h3>
-                        </Link>
-                    ))}
-                </div>
-            </section>
+          <section className="relative -mt-[6%] md:-mt-[3%] px-6">
+  <div className="max-w-6xl mx-auto space-y-6">
+    {/* First row: 5 cards */}
+    <div className="grid gap-6 grid-cols-1 sm:grid-cols-5">
+      {cat?.slice(0, 5).map((e, index) => (
+        <Link
+          to={`/category/${e?.id}/${encodeURIComponent(e?.name)}`}
+          key={index}
+          className="bg-white cursor-pointer rounded-xl p-8 flex flex-col items-center text-center shadow-lg hover:shadow-2xl transition-shadow duration-300"
+        >
+          <h3 className="text-lg font-semibold">{e?.name}</h3>
+        </Link>
+      ))}
+    </div>
+
+    {/* Second row: remaining 4 cards */}
+    <div className="grid gap-6 grid-cols-1 sm:grid-cols-4">
+      {cat?.slice(5, 9).map((e, index) => (
+        <Link
+          to={`/category/${e?.id}/${encodeURIComponent(e?.name)}`}
+          key={index}
+          className="bg-white cursor-pointer rounded-xl p-8 flex flex-col items-center text-center shadow-lg hover:shadow-2xl transition-shadow duration-300"
+        >
+          <h3 className="text-lg font-semibold">{e?.name}</h3>
+        </Link>
+      ))}
+    </div>
+  </div>
+</section>
+
 
             {/* Article section */}
             <ArticlesSection
